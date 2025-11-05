@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pilot Risk Perception – Expert Rating Form (TRIRISK + A4 print)</title>
+
+<!-- Load Inter as a web font so it works on any computer -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&ampdisplay=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0b1020; --ink:#e9eef9; --muted:#b6c0d9; --line:rgba(255,255,255,.16);
+    --panel:#101628; --panel2:#0f1526; --panel3:#11182a;
+    --glass:rgba(255,255,255,.10);
+    --accent:#7dd3fc; --accentText:#0b1020; --edit:#ff4d4d; --focus:#ffd166;
+    --maxw:1200px; --radius:16px; --pad:14px;
+    --shadow:0 1px 2px rgba(0,0,0,.25),0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  /* TEMP: hide Save buttons */
+  #save, #save2 { display:none !important; }
+
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.45 "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background-image:
+      radial-gradient(1200px 700px at 10% -10%, rgba(125,211,252,.13), transparent 60%),
+      radial-gradient(1000px 600px at 110% 20%, rgba(167,139,250,.12), transparent 60%),
+      radial-gradient(900px 600px at 40% 120%, rgba(52,211,153,.10), transparent 60%);
+    background-attachment: fixed;
+  }
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding: clamp(14px,2vw,28px); }
+  .hero{
+    position:relative; border-radius:24px; padding:24px 28px; overflow:hidden;
+    background:linear-gradient(120deg, rgba(125,211,252,.16), rgba(167,139,250,.18));
+    box-shadow:var(--shadow); isolation:isolate;
+  }
+  h1{margin:0 0 6px; font-size: clamp(1.2rem, 2.4vw, 1.7rem)}
+  .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center}
+  .btn{
+    appearance:none; border:1px solid var(--line); color:var(--ink);
+    background:linear-gradient(180deg, var(--glass), transparent);
+    padding:.5rem .8rem; border-radius:12px; cursor:pointer;
+    box-shadow:var(--shadow); backdrop-filter:blur(8px);
+    transition: transform .08s ease, border-color .15s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); border-color: rgba(125,211,252,.55); }
+  .hint{ color:var(--muted); font-size:.92rem; margin:6px 0 0 }
+
+  /* Section cards */
+  .card{
+    margin-top:18px; padding:18px; border-radius:18px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow); backdrop-filter: blur(8px);
+  }
+  #cognitive.card     { background:linear-gradient(180deg, rgba(125,211,252,.06), transparent), var(--panel); }
+  #affective.card     { background:linear-gradient(180deg, rgba(167,139,250,.07), transparent), var(--panel2); }
+  #experiential.card  { background:linear-gradient(180deg, rgba(52,211,153,.06), transparent), var(--panel3); }
+
+  h2{font-size:1.05rem; margin:0 0 10px}
+  .section-title{
+    font-weight:700; padding:.45rem .7rem; border-radius:10px; border:1px dashed var(--line);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), transparent); margin: 4px 0 12px;
+  }
+
+  .item{
+    display:grid; grid-template-columns: minmax(260px,1.25fr) minmax(320px,1.75fr);
+    gap:14px; padding:12px; border:1px solid var(--line); border-radius:14px; margin-bottom:10px;
+    background: rgba(255,255,255,.03);
+  }
+  .item-id{ font-weight:700; color:var(--muted); margin-right:8px }
+  .qwrap{ display:flex; flex-direction:column }
+  .item-text{ margin:0; }
+  .edit-hint{ margin:.25rem 0 0; color:var(--muted); font-size:.8rem }
+  .quad{ display:grid; grid-template-columns: 1fr 1fr 1fr 1.6fr; gap:10px }
+  .col{
+    background: rgba(255,255,255,.05); border:1px solid var(--line); border-radius:12px; padding:8px;
+    display:grid; grid-template-rows: auto 1fr; gap:6px;
+  }
+  .col label{ font-size:.88rem; color:var(--muted); display:block; line-height:1.1 }
+  .col label .sub{ display:block; font-size:.82em; opacity:.95 }
+
+  .compact-select{
+    appearance:none; width:100%; height:40px; box-sizing:border-box;
+    border:1px solid var(--line); border-radius:10px;
+    background-color: var(--accent); color: var(--accentText);
+    padding:.35rem 2.1rem .35rem .6rem; box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+    outline:none; transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .compact-select:focus{ border-color: rgba(0,0,0,.35); box-shadow: 0 0 0 4px rgba(125,211,252,.25) }
+  .col.select-wrap{ position:relative }
+  .col.select-wrap::after{ content:"▾"; position:absolute; right:12px; top:44px; pointer-events:none; color: var(--accentText); font-size:.9rem }
+  textarea, input, select{ box-sizing: border-box; }
+  textarea{
+    width:100%; min-height:70px; resize:vertical;
+    color:var(--ink); background:rgba(255,255,255,.06);
+    border:1px solid var(--line); border-radius:10px; padding:.55rem .6rem;
+  }
+  textarea:focus{ border-color: rgba(125,211,252,.65); box-shadow: 0 0 0 4px rgba(125,211,252,.15) }
+  .ins{ color: var(--edit); font-weight: 600 }
+  .hidden-editor{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
+
+  .row{ display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:12px }
+  .label{ font-weight:600; color:var(--ink) }
+  .inline{ display:flex; gap:14px; align-items:center; flex-wrap:wrap }
+  input[type="text"], .chipbox{
+    color:var(--ink); background:rgba(255,255,255,.06);
+    border:1px solid var(--line); border-radius:10px; padding:.5rem .6rem;
+  }
+  input[type="text"]{ width:100%; }
+
+  /* Password gate */
+  body.locked .wrap{ filter: blur(10px); pointer-events:none; user-select:none; }
+  #gate{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.55); backdrop-filter: blur(6px); z-index:9999;
+  }
+  #gate .panel{
+    width:min(92vw, 640px); background:#121826; color:#e9eef9; border:1px solid #263041;
+    border-radius:16px; padding:16px 18px; box-shadow: var(--shadow);
+  }
+  #gate h3{ margin:0 0 6px; font-size:1.05rem }
+  #gate p{ margin:0 0 10px; color:#b6c0d9; font-size:.92rem }
+  #gate .row{ margin:0 0 10px; }
+  #gate input[type="password"]{
+    width:100%; padding:.55rem .7rem; border:1px solid #2f3a4d; border-radius:10px;
+    background:#0f1424; color:#e9eef9; outline:none;
+  }
+  #gate input[type="password"]:focus{ border-color:#7dd3fc; box-shadow: 0 0 0 3px rgba(125,211,252,.25) }
+  #gate .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:6px }
+  #gate .btn{ background:#1d2538; border-color:#2f3a4d }
+  #gate .btn.primary{ background:#0a66c2; border-color:#0a66c2; color:#fff }
+
+  /* Welcome modal */
+  #welcomeModal{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.55); backdrop-filter: blur(10px); z-index:10000;
+  }
+  #welcomeModal .panel{
+    width:min(92vw, 500px); background:#121826; color:#e9eef9; border:1px solid #263041;
+    border-radius:16px; padding:20px 24px; box-shadow: var(--shadow);
+    text-align: center;
+  }
+  #welcomeModal h3{ margin:0 0 12px; font-size:1.2rem; color: #7dd3fc; }
+  #welcomeModal p{ margin:0 0 18px; color:#b6c0d9; font-size:.95rem; line-height:1.4; }
+  #welcomeModal .btn{ 
+    background: linear-gradient(135deg, #7dd3fc, #38bdf8); 
+    border-color: #7dd3fc; 
+    color: #0b1020; 
+    font-weight: 600;
+    padding: 10px 24px;
+  }
+
+  #printView{ display:none; }
+
+  @media print{
+    @page { size: A4; margin: 15mm; }
+    html, body { background:#ffffff !important; color:#000000 !important; height:auto !important; }
+    body{ font-family:"Segoe UI", Arial, sans-serif !important; }
+    .wrap, #gate{ display:none !important; }
+    #printView{ display:block !important; position:static !important; margin:0; padding:0; }
+    #printView *{ color:#000 !important; background:transparent !important; box-shadow:none !important; }
+    #printView h1{ font-size:18pt; text-align:center; margin:0 0 4mm; page-break-after:avoid; }
+    #pvTable{ width:100%; border-collapse:collapse; table-layout:fixed; }
+    #pvTable thead th{ border-bottom:1pt solid #000; padding:4pt 6pt; text-align:left; font-size:10pt; }
+    #pvTable tbody td{ border-bottom:0.6pt solid #000; padding:4pt 6pt; vertical-align:top; font-size:10pt; word-wrap:break-word; }
+    #pvTable .narrow{ width:6% } #pvTable .qcol{ width:44% } #pvTable .score{ width:10% } #pvTable .sug{ width:30% } #pvTable .section{ font-weight:700 }
+    .info-panel::before{ content:none !important; }
+  }
+  .controls.bottom .btn{ padding:.75rem 1.15rem; font-size:1rem; }
+
+  .info-panel{
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .info-panel > *{ position: relative; z-index: 1; }
+  .info-panel::before{
+    content: "";
+    position: absolute;
+    inset: -24%;
+    background:
+      radial-gradient(200px 160px at 15% 20%, rgba(125,211,252,.22), transparent 65%),
+      radial-gradient(220px 180px at 85% 30%, rgba(167,139,250,.20), transparent 70%),
+      radial-gradient(240px 220px at 30% 120%, rgba(52,211,153,.18), transparent 70%);
+    filter: blur(32px);
+    opacity: .36;
+    transform: translate3d(0,0,0);
+    animation: infoFloat 1s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: inherit;
+  }
+  @keyframes infoFloat{
+    0%   { transform: translate3d(-8%, -6%, 0) scale(1.00); }
+    50%  { transform: translate3d( 6%,  3%, 0) scale(1.05); }
+    100% { transform: translate3d(-4%,  8%, 0) scale(1.00); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .info-panel::before{ animation: none; opacity: 1.00; }
+  }
+</style>
+</head>
+<body>
+  <!-- Password Gate (enabled here; set PASSWORD_ENABLED=false to disable) -->
+  <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="panel">
+      <h3 id="gateTitle">Enter Password</h3>
+      <p>Access to this survey preview is restricted. Please enter the password to continue.</p>
+      <div class="row">
+        <label for="gate_pwd" class="label" style="display:block;margin-bottom:6px;">Password</label>
+        <input id="gate_pwd" type="password" inputmode="numeric" autocomplete="off" placeholder="Enter password" />
+      </div>
+      <div class="actions">
+        <button class="btn" id="gate_cancel" type="button">Cancel</button>
+        <button class="btn primary" id="gate_ok" type="button">Unlock</button>
+      </div>
+      <p id="gate_msg" style="color:#ffb4b4; min-height:1.2em; margin-top:6px;"></p>
+    </div>
+  </div>
+
+  <!-- Welcome Modal -->
+  <div id="welcomeModal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="panel">
+      <h3 id="welcomeTitle">Hello!</h3>
+      <p>Thank you for agreeing to serve as an Expert Reviewer. The project seeks to develop a new survey for measuring pilots' risk perception, using a framework originally designed for the healthcare domain, now being adapted for aviation. Your task is to review 25 questions, suggest edits or removals, and assign scores using the provided rating system. The review should take about 30 minutes. <br><br>
+      Your feedback will help determine whether this framework can navigate safely beyond its original runway—no turbulence expected. Click Continue to begin
+      </p>
+      <button class="btn" id="welcomeClose" type="button">Continue</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="hero">
+      <h1>Pilot Risk Perception – Expert Rating Form</h1>
+      <div class="controls">
+        <button class="btn" id="save">Save</button>
+        <button class="btn" id="clear">Clear</button>
+        <button class="btn" id="exportCsv">Excel</button>
+        <button class="btn" id="exportDoc">Word</button>
+        <button class="btn" id="printBtn">Print</button>
+      </div>
+      <p class="hint">Progress: <strong id="progress">0/25</strong></p>
+    </section>
+
+    <!-- Framework -->
+    <section class="card" id="framework">
+      <h2>Proposed Framework and Definitions</h2>
+
+      <div class="info-panel">
+        <p>The proposed Pilot Risk Perception Scale applies a three-dimensional structure originally developed in the healthcare field, now adapted for aviation. The diagram below depicts the main construct and its three underlying dimensions, each defined for clarity. Please use expert judgment to rate each item on relevance, clarity, and conceptual fit to assist in refining the scale.</p>
+      </div>
+
+      <div class="chartWrap" aria-label="TRIRISK organizational chart">
+        <svg viewBox="0 0 920 320" width="100%" height="360" role="img" style="max-width:900px;">
+          <defs>
+            <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="rgba(255,255,255,0.18)"/>
+              <stop offset="1" stop-color="rgba(255,255,255,0.06)"/>
+            </linearGradient>
+            <style>
+              .box { fill:url(#g); stroke:rgba(255,255,255,0.35); stroke-width:1.5; rx:10; ry:20; }
+              .title { fill:#e9eef9; font: 700 16px Inter, Arial, sans-serif; }
+              .parent { fill:#e9eef9; font: 700 18px Inter, Arial, sans-serif; }
+              .line { stroke:rgba(255,255,255,0.45); stroke-width:2; }
+              .desc { fill:#cfd6e8; font: 400 14px Inter, Arial, sans-serif; }
+            </style>
+          </defs>
+          <rect class="box" x="320" y="10" width="280" height="56" />
+          <text class="parent" x="460" y="43" text-anchor="middle">Pilot Risk Perception</text>
+          <line class="line" x1="460" y1="66" x2="460" y2="100" />
+          <line class="line" x1="200" y1="100" x2="200" y2="120" />
+          <line class="line" x1="460" y1="100" x2="460" y2="120" />
+          <line class="line" x1="750" y1="100" x2="750" y2="120" />
+          <line class="line" x1="200" y1="100" x2="750" y2="100" />
+          <rect class="box" x="80" y="120" width="240" height="56" />
+          <text class="title" x="200" y="153" text-anchor="middle">Cognitive</text>
+          <text class="desc" x="220" y="188" text-anchor="middle">
+            <tspan x="200" dy="18">Deliberate, rule-based judgments about</tspan>
+            <tspan x="200" dy="18">likelihood and severity; uses weather,</tspan>
+            <tspan x="200" dy="18">aircraft status, procedures, past cases.</tspan>
+          </text>
+          <rect class="box" x="340" y="120" width="240" height="56" />
+          <text class="title" x="460" y="153" text-anchor="middle">Affective</text>
+          <text class="desc" x="460" y="188" text-anchor="middle">
+            <tspan x="460" dy="18">Emotions triggered by threat cues</tspan>
+            <tspan x="460" dy="18">(e.g., worry, unease, fear) that can</tspan>
+            <tspan x="460" dy="18">shape judgments and choices.</tspan>
+          </text>
+          <rect class="box" x="620" y="120" width="240" height="56" />
+          <text class="title" x="740" y="153" text-anchor="middle">Experiential</text>
+          <text class="desc" x="700" y="188" text-anchor="middle">
+            <tspan x="740" dy="18">Rapid, heuristic "gut-level" impressions</tspan>
+            <tspan x="740" dy="18">from pattern recognition and learned</tspan>
+            <tspan x="740" dy="18">associations before analysis.</tspan>
+          </text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Survey sections -->
+    <section class="card" id="cognitive">
+      <h2>Cognitive</h2>
+      <div class="section-title">Conscious, analytical risk assessment</div>
+      <div id="mount-cognitive"></div>
+    </section>
+
+    <section class="card" id="affective">
+      <h2>Affective</h2>
+      <div class="section-title">Emotional response to risk</div>
+      <div id="mount-affective"></div>
+    </section>
+
+    <section class="card" id="experiential">
+      <h2>Experiential</h2>
+      <div class="section-title">Intuitive, gut-level perception</div>
+      <div id="mount-experiential"></div>
+    </section>
+
+    <!-- Additional (renumbered: former Q29 -> Q26) -->
+    <section class="card" id="additional">
+      <h2>Additional questions</h2>
+
+      <div class="row">
+        <div class="label">Q26. Optional: Please provide any additional feedback below:</div>
+        <label>A. Are there any important aspects of pilot risk perception that are missing from these items?</label>
+        <textarea id="q26a" placeholder="Your thoughts..."></textarea>
+        <label>B. Are there any terms or phrases that you find confusing or that might be interpreted differently by different pilots?</label>
+        <textarea id="q26b" placeholder="Your thoughts..."></textarea>
+        <label>C. Do you have any general suggestions for improving the scale?</label>
+        <textarea id="q26c" placeholder="Your thoughts..."></textarea>
+      </div>
+    </section>
+
+    <div class="controls bottom" style="margin-top:18px; justify-content:flex-end;">
+      <button class="btn" id="save2">Save</button>
+      <button class="btn" id="clear2">Clear</button>
+      <button class="btn" id="exportCsv2">Excel</button>
+      <button class="btn" id="exportDoc2">Word</button>
+      <button class="btn" id="printBtn2">Print</button>
+    </div>
+  </div>
+
+  <div id="printView" aria-hidden="true"></div>
+
+<script>
+/* ---------- Password Gate ---------- */
+const PASSWORD_ENABLED = true;
+const GATE_PW = "123456";
+
+function unlock() {
+  document.body.classList.remove('locked');
+  const gate = document.getElementById('gate');
+  if (gate) gate.style.display = 'none';
+  sessionStorage.setItem('prps_unlocked', '1');
+  
+  // Show welcome modal after unlocking
+  showWelcomeModal();
+}
+
+function showWelcomeModal() {
+  const welcomeModal = document.getElementById('welcomeModal');
+  const welcomeClose = document.getElementById('welcomeClose');
+  
+  welcomeModal.style.display = 'flex';
+  
+  // Add event listener to close button
+  welcomeClose.addEventListener('click', function() {
+    welcomeModal.style.display = 'none';
+  });
+  
+  // Also close when clicking outside the modal
+  welcomeModal.addEventListener('click', function(e) {
+    if (e.target === welcomeModal) {
+      welcomeModal.style.display = 'none';
+    }
+  });
+}
+
+(function initGate(){
+  if (!PASSWORD_ENABLED) { 
+    // If password is disabled, show welcome modal directly
+    showWelcomeModal();
+    return; 
+  }
+  
+  document.body.classList.add('locked');
+  const unlocked = sessionStorage.getItem('prps_unlocked') === '1';
+  const gate = document.getElementById('gate');
+  const pwd = document.getElementById('gate_pwd');
+  const ok = document.getElementById('gate_ok');
+  const cancel = document.getElementById('gate_cancel');
+  const msg = document.getElementById('gate_msg');
+  
+  // Hide welcome modal initially
+  document.getElementById('welcomeModal').style.display = 'none';
+  
+  if (unlocked) { 
+    // If already unlocked, show welcome modal
+    showWelcomeModal();
+    return; 
+  }
+  
+  // Show password gate
+  gate.style.display = 'flex';
+  
+  ok.addEventListener('click', function() {
+    if (pwd.value === GATE_PW) {
+      unlock();
+    } else { 
+      msg.textContent = 'Incorrect password.'; 
+      pwd.focus(); 
+      pwd.select(); 
+    }
+  });
+  
+  cancel.addEventListener('click', function() { 
+    pwd.value=''; 
+    msg.textContent=''; 
+    pwd.focus(); 
+  });
+  
+  pwd.addEventListener('keydown', function(e){ 
+    if (e.key === 'Enter') ok.click(); 
+  });
+  
+  window.addEventListener('beforeprint', function(e) {
+    if (document.body.classList.contains('locked')) {
+      alert('Enter the password before printing.');
+      e.preventDefault?.();
+    }
+  });
+})();
+
+/* ---------- Items 1–25 ---------- */
+const items = [
+  {id:1,  dim:'Cognitive', text:'When objective information (weather, aircraft status, NOTAMs) is near or below applicable minima I judge the flight risk as high.'},
+  {id:2,  dim:'Cognitive', text:'When planning or briefing a flight, I explicitly consider what could go wrong.'},
+  {id:3,  dim:'Cognitive', text:'Before a flight, I appraise risk by considering specific contingencies for credible problems.'},
+  {id:4,  dim:'Cognitive', text:'I apply the applicable minimums (personal/organization) to inform my judgment of flight risk.'},
+  {id:5,  dim:'Cognitive', text:'As in-flight conditions change, I re-assess how risky the situation is.'},
+  {id:6,  dim:'Cognitive', text:'I calibrate my risk judgments in flight using similar past situations and training.'},
+  {id:7,  dim:'Cognitive', text:'When planning, I form a mental estimate of how risky the flight will be.'},
+  {id:8,  dim:'Cognitive', text:'When I feel schedule/social/operational pressure, I perceive it as a factor that raises risk.'},
+  {id:9,  dim:'Cognitive', text:'I judge that my own performance limits can raise risk if hazards aren\'t managed.'},
+
+  {id:10, dim:'Affective', text:'I feel uneasy when environmental or operational cues suggest increased flight risk.'},
+  {id:11, dim:'Affective', text:'I feel uneasy when conditions indicate increased risk.'},
+  {id:12, dim:'Affective', text:'When risk cues appear, I feel anxiety about a possible incident.'},
+  {id:13, dim:'Affective', text:'When I perceive higher preflight risk, I feel anxious.'},
+  {id:14, dim:'Affective', text:'Learning about recent accidents makes me worry about my own safety.'},
+  {id:15, dim:'Affective', text:'I experience worry when automation behaves unexpectedly.'},
+  {id:16, dim:'Affective', text:'In situations I judge as dangerous, I experience fear.'},
+  {id:17, dim:'Affective', text:'I feel tense when time pressure builds.'},
+
+  {id:18, dim:'Experiential', text:'My accumulated experience helps me recognize patterns that signal rising risk.'},
+  {id:19, dim:'Experiential', text:'I get an early "gut feeling" that risk is rising before I can explain why.'},
+  {id:20, dim:'Experiential', text:'I sense risk rising before objective indicators confirm it.'},
+  {id:21, dim:'Experiential', text:'Approaching convective weather feels risky to me even before conditions reach the applicable minima.'},
+  {id:22, dim:'Experiential', text:'Small cockpit cues (e.g., workload) can give me an early feeling that risk is rising.'},
+  {id:23, dim:'Experiential', text:'When workload starts creeping up, I get a gut alert that risk is rising, even before performance degrades.'},
+  {id:24, dim:'Experiential', text:'Subtle changes in system behavior can give me an early feeling that risk is rising.'},
+  {id:25, dim:'Experiential', text:'A mismatch between what I expected and what I observe can trigger an early sense of rising risk.'},
+];
+
+/* ---------- Labeled option builders ---------- */
+function relOptions(){  // Relevance 1–4 with labels
+  return [
+    '<option value="">—</option>',
+    '<option value="1">1 — Not Relevant</option>',
+    '<option value="2">2 — Somewhat Relevant</option>',
+    '<option value="3">3 — Relevant</option>',
+    '<option value="4">4 — Highly Relevant</option>'
+  ].join('');
+}
+function clrOptions(){  // Clarity 1–5 with labels
+  return [
+    '<option value="">—</option>',
+    '<option value="1">1 — Very Unclear</option>',
+    '<option value="2">2 — Unclear</option>',
+    '<option value="3">3 — Adequate</option>',
+    '<option value="4">4 — Clear</option>',
+    '<option value="5">5 — Very Clear</option>'
+  ].join('');
+}
+function fitOptions(){  // Fit to Dimension 1–5 with labels
+  return [
+    '<option value="">—</option>',
+    '<option value="1">1 — Poor Fit</option>',
+    '<option value="2">2 — Fair</option>',
+    '<option value="3">3 — Good</option>',
+    '<option value="4">4 — Very Good</option>',
+    '<option value="5">5 — Excellent Fit</option>'
+  ].join('');
+}
+
+/* ---------- Build item rows ---------- */
+function itemBlock(x){
+  return `
+    <div class="item">
+      <div class="qwrap">
+        <p class="item-text" data-id="${x.id}" data-orig="${x.text.replace(/"/g,'&quot;')}">
+          <span class="item-id">${x.id}.</span><span class="qtext">${x.text}</span>
+        </p>
+        <textarea class="hidden-editor" id="edit_${x.id}" aria-label="Edit item ${x.id}">${x.text}</textarea>
+        <div class="edit-hint">Tip: click the question text to suggest edits</div>
+      </div>
+      <div class="quad">
+        <div class="col select-wrap">
+          <label for="rel_${x.id}"><span>Relevance</span><span class="sub"> </span></label>
+          <select id="rel_${x.id}" class="compact-select">${relOptions()}</select>
+        </div>
+        <div class="col select-wrap">
+          <label for="clr_${x.id}"><span>Clarity</span><span class="sub"> </span></label>
+          <select id="clr_${x.id}" class="compact-select">${clrOptions()}</select>
+        </div>
+        <div class="col select-wrap">
+          <label for="fit_${x.id}"><span>Fit to Dimension</span><span class="sub"> </span></label>
+          <select id="fit_${x.id}" class="compact-select">${fitOptions()}</select>
+        </div>
+        <div class="col">
+          <label for="cmt_${x.id}"><span>Suggestions</span><span class="sub">(optional)</span></label>
+          <textarea id="cmt_${x.id}"></textarea>
+        </div>
+      </div>
+    </div>`;
+}
+function renderSection(dim, mountId){
+  const mount=document.getElementById(mountId);
+  mount.innerHTML = items.filter(x=>x.dim===dim).map(itemBlock).join('');
+}
+renderSection('Cognitive','mount-cognitive');
+renderSection('Affective','mount-affective');
+renderSection('Experiential','mount-experiential');
+
+/* ---------- Editable ---------- */
+function setupEditable(){
+  document.querySelectorAll('.item-text').forEach(p=>{
+    const id=p.getAttribute('data-id');
+    const orig=p.getAttribute('data-orig') || '';
+    const displaySpan=p.querySelector('.qtext');
+    const editor=document.getElementById(`edit_${id}`);
+    p.addEventListener('click', ()=>{
+      editor.style.position='static'; editor.classList.remove('hidden-editor');
+      editor.focus(); editor.selectionStart = editor.selectionEnd = editor.value.length;
+    });
+    editor.addEventListener('input', ()=>{
+      displaySpan.innerHTML = diffHighlight(orig, editor.value);
+      countRated();
+    });
+    editor.addEventListener('blur', ()=>{
+      editor.classList.add('hidden-editor'); editor.style.position='absolute';
+    });
+  });
+}
+setupEditable();
+
+/* ---------- Progress ---------- */
+function countRated(){
+  let c=0;
+  for(const it of items){
+    const r=document.getElementById(`rel_${it.id}`).value;
+    const a=document.getElementById(`clr_${it.id}`).value;
+    const f=document.getElementById(`fit_${it.id}`).value;
+    if(r && a && f) c++;
+  }
+  document.getElementById('progress').textContent = `${c}/25`;
+}
+document.addEventListener('change', e=>{
+  if(e.target.matches('select, textarea, input[type="range"], input[type="text"], input[type="checkbox"]')) countRated();
+});
+
+/* ---------- Save / Clear / Export ---------- */
+const KEY='prps_expert_form_worddiff_v3_nodemog';
+function getRenderedText(id){
+  const p=document.querySelector(`.item-text[data-id="${id}"] .qtext`);
+  return p ? p.textContent.trim() : '';
+}
+function save(){
+  const data = {
+    items: items.map(it => ({
+      id: it.id,
+      qtext: getRenderedText(it.id),
+      rel: document.getElementById(`rel_${it.id}`).value || '',
+      clr: document.getElementById(`clr_${it.id}`).value || '',
+      fit: document.getElementById(`fit_${it.id}`).value || '',
+      cmt: document.getElementById(`cmt_${it.id}`).value || ''
+    })),
+    extras:{
+      q26: {
+        a: document.getElementById('q26a')?.value || '',
+        b: document.getElementById('q26b')?.value || '',
+        c: document.getElementById('q26c')?.value || ''
+      }
+    }
+  };
+  localStorage.setItem(KEY, JSON.stringify(data));
+  alert('Saved locally.');
+}
+function clearAll(){
+  if(!confirm('Clear all fields?')) return;
+  localStorage.removeItem(KEY);
+  document.querySelectorAll('select, textarea, input[type="text"]').forEach(e=>e.value='');
+  document.querySelectorAll('input[type="checkbox"]').forEach(e=>e.checked=false);
+  document.querySelectorAll('.item-text').forEach(p=>{
+    const id=p.getAttribute('data-id'); const orig=p.getAttribute('data-orig')||'';
+    const displaySpan=p.querySelector('.qtext'); const editor=document.getElementById(`edit_${id}`);
+    displaySpan.textContent=orig; editor.value=orig;
+  });
+  countRated();
+}
+function toRows(){
+  const rows = items.map(it => ([
+    it.id,
+    `"${getRenderedText(it.id).replace(/"/g,'""')}"`,
+    document.getElementById(`rel_${it.id}`).value || '',
+    document.getElementById(`clr_${it.id}`).value || '',
+    document.getElementById(`fit_${it.id}`).value || '',
+    `"${(document.getElementById(`cmt_${it.id}`).value || '').replace(/"/g,'""')}"`
+  ]));
+  return rows;
+}
+function exportCsv(){  /* Excel-compatible CSV */
+  const header=['Item #','Item Text','Relevance (1-4)','Clarity (1-5)','Fit (1-5)','Suggestions',
+                'Q26A Missing aspects','Q26B Confusing terms','Q26C General suggestions'];
+  const rows=[header, ...toRows()];
+  const A = (document.getElementById('q26a').value || '').replace(/"/g,'""');
+  const B = (document.getElementById('q26b').value || '').replace(/"/g,'""');
+  const C = (document.getElementById('q26c').value || '').replace(/"/g,'""');
+  rows.push(['','','','','','',`"${A}"`,`"${B}"`,`"${C}"`]);
+
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const aTag=document.createElement('a'); aTag.href=URL.createObjectURL(blob);
+  aTag.download='pilot-risk-perception-expert-ratings.csv'; aTag.click(); URL.revokeObjectURL(aTag.href);
+}
+
+/* ---------- Report (print & Word) ---------- */
+function generateReportHTML(){
+  const coreRows = items.map(it => {
+    const rel = document.getElementById(`rel_${it.id}`).value || '';
+    const clr = document.getElementById(`clr_${it.id}`).value || '';
+    const fit = document.getElementById(`fit_${it.id}`).value || '';
+    const sug = (document.getElementById(`cmt_${it.id}`).value || '').replace(/\n/g,'<br>');
+    const qtxt = (document.querySelector(`.item-text[data-id="${it.id}"] .qtext`)?.textContent || '').trim();
+    return `<tr>
+      <td class="narrow">${it.id}</td>
+      <td class="qcol">${qtxt}</td>
+      <td class="score">${rel}</td>
+      <td class="score">${clr}</td>
+      <td class="score">${fit}</td>
+      <td class="sug">${sug}</td>
+    </tr>`;
+  }).join('');
+
+  const A = (document.getElementById('q26a').value || '').replace(/\n/g,'<br>');
+  const B = (document.getElementById('q26b').value || '').replace(/\n/g,'<br>');
+  const C = (document.getElementById('q26c').value || '').replace(/\n/g,'<br>');
+
+  const addRows = `
+    <tr class="section"><td colspan="6">Additional</td></tr>
+    <tr>
+      <td class="narrow">Q26A</td>
+      <td class="qcol">Missing aspects of pilot risk perception</td>
+      <td class="score" colspan="4">${A || '—'}</td>
+    </tr>
+    <tr>
+      <td class="narrow">Q26B</td>
+      <td class="qcol">Confusing terms / different interpretations</td>
+      <td class="score" colspan="4">${B || '—'}</td>
+    </tr>
+    <tr>
+      <td class="narrow">Q26C</td>
+      <td class="qcol">General suggestions for improving the scale</td>
+      <td class="score" colspan="4">${C || '—'}</td>
+    </tr>
+  `;
+
+  return `
+    <h1>Pilot Risk Perception – Expert Ratings</h1>
+    <table id="pvTable" aria-label="Pilot Risk Perception – Expert Ratings" style="width:100%; border-collapse:collapse; table-layout:fixed;">
+      <thead>
+        <tr>
+          <th class="narrow" style="border-bottom:1pt solid #000; text-align:left; padding:4pt 6pt;">#</th>
+          <th class="qcol" style="border-bottom:1pt solid #000; text-align:left; padding:4pt 6pt;">Question</th>
+          <th class="score" style="border-bottom:1pt solid #000; text-align:left; padding:4pt 6pt;">Rel.</th>
+          <th class="score" style="border-bottom:1pt solid #000; text-align:left; padding:4pt 6pt;">Clar.</th>
+          <th class="score" style="border-bottom:1pt solid #000; text-align:left; padding:4pt 6pt;">Fit</th>
+          <th class="sug" style="border-bottom:1pt solid #000; text-align:left; padding:4pt 6pt;">Suggestions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="section"><td colspan="6" style="font-weight:700; padding:4pt 6pt;">Core Items</td></tr>
+        ${coreRows}
+        ${addRows}
+      </tbody>
+    </table>
+  `;
+}
+
+/* ---------- Print & Word ---------- */
+function buildPrintView(){
+  document.getElementById('printView').innerHTML = generateReportHTML();
+}
+function exportWord(){
+  const content = `<!doctype html><html><head><meta charset="utf-8">
+    <title>Pilot Risk Perception – Expert Ratings</title>
+    <style>
+      body{ font-family:"Segoe UI", Arial, sans-serif; color:#000; }
+      table{ border-collapse:collapse; width:100%; }
+      th,td{ border-bottom:1pt solid #000; padding:4pt 6pt; text-align:left; font-size:10pt; }
+      h1{ text-align:center; font-size:18pt; margin:0 0 8pt; }
+    </style>
+  </head><body>
+    ${generateReportHTML()}
+  </body></html>`;
+  const blob = new Blob([content], {type: 'application/msword'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pilot-risk-perception-expert-ratings.doc';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- Hooks ---------- */
+document.getElementById('save').addEventListener('click', save);
+document.getElementById('clear').addEventListener('click', clearAll);
+document.getElementById('exportCsv').addEventListener('click', exportCsv);
+document.getElementById('exportDoc').addEventListener('click', exportWord);
+document.getElementById('printBtn').addEventListener('click', ()=>{ buildPrintView(); window.print(); });
+
+document.getElementById('save2').addEventListener('click', save);
+document.getElementById('clear2').addEventListener('click', clearAll);
+document.getElementById('exportCsv2').addEventListener('click', exportCsv);
+document.getElementById('exportDoc2').addEventListener('click', exportWord);
+document.getElementById('printBtn2').addEventListener('click', ()=>{ buildPrintView(); window.print(); });
+
+window.addEventListener('beforeprint', buildPrintView);
+
+/* Diff helpers (kept at end) */
+function tokenize(s){ return s.match(/[\p{L}\p{N}_]+|[\s]+|[^\p{L}\p{N}_\s]/gu) || []; }
+function lcsMatrix(a,b){
+  const m = Array(a.length+1).fill(0).map(()=>Array(b.length+1).fill(0));
+  for(let i=1;i<=a.length;i++){ for(let j=1;j<=b.length;j++){
+    if(a[i-1]===b[j-1]) m[i][j]=m[i-1][j-1]+1;
+    else m[i][j]=Math.max(m[i-1][j],m[i][j-1]);
+  }} return m;
+}
+function backtrack(a,b,m){
+  const path=[]; let i=a.length, j=b.length;
+  while(i>0 && j>0){
+    if(a[i-1]===b[j-1]){ path.unshift(a[i-1]); i--; j--; }
+    else if(m[i-1][j] >= m[i][j-1]){ i--; } else { j--; }
+  } return path;
+}
+function escapeHtml(s){ return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function diffHighlight(orig, now){
+  const A=tokenize(orig), B=tokenize(now);
+  const M=lcsMatrix(A,B);
+  const eqSeq=backtrack(A,B,M);
+  const out=[]; let k=0;
+  for(let t of B){
+    if(k<eqSeq.length && t===eqSeq[k]){ out.push(escapeHtml(t)); k++; }
+    else{ out.push(`<span class="ins">${escapeHtml(t)}</span>`); }
+  }
+  return out.join('');
+}
+</script>
+</body>
+</html>
